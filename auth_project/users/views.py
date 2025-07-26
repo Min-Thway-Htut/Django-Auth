@@ -16,9 +16,18 @@ class RegisterView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             
+            approve_url = f"http://localhost:8000/api/users/approve/{user.approval_token}/"
+            reject_url = f"http://localhost:8000/api/users/reject/{user.approval_token}/"
+
+            message = (
+                 f"New user registered: {user.username}\n\n"
+                 f"To approve, click: {approve_url}\n"
+                 f"To reject, click: {reject_url}"
+            )
+             
             send_mail(
                  subject='New User Registration Pending Approval',
-                 message=f"A new user has registered:\n\nUsername: {user.username}\nEmail: {user.email}\nApprove them in the admin panel.",
+                 message=message,
                  from_email=settings.DEFAULT_FROM_EMAIL,
                  recipient_list=[settings.EMAIL_HOST_USER],  # make sure ADMIN_EMAIL is defined in settings.py
                  fail_silently=False
@@ -38,3 +47,24 @@ class LoginView(APIView):
             return Response({'token': token.key})
         return Response({'error': 'Invalid credentials'}, status=400)
            
+User = get_user_model()
+
+class ApproveUserView(APIView):
+    def get(self, request, token):
+        try:
+            user = User.objects.get(approval_token=token)
+            user.is_approved = True
+            user.save()
+            return Response({"message": "User approved successfully."})
+        except User.DoesNotExist:
+            return Response({"error": "Invalid approval token."}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class RejectUserView(APIView):
+    def get(self, request, token):
+        try:
+            user = User.objects.get(approval_token=token)
+            user.delete()
+            return Response({"message": "User rejected and deleted."})
+        except User.DoesNotExist:
+            return Response({"error": "Invalid rejection token."}, status=status.HTTP_404_NOT_FOUND)

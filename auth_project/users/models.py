@@ -4,7 +4,5 @@ import uuid
 
 class CustomUser(AbstractUser):
     is_approved = models.BooleanField(default=False)
-    registration_code = models.UUIDField(default=uuid.uuid4, editable=False)
-    
-
+    approval_token = models.UUIDField(default=uuid.uuid4, unique=True, null=True, blank=True)
     
