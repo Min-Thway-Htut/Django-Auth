@@ -7,7 +7,7 @@ const Home = () => {
   useEffect(() => {
     const token = localStorage.getItem('access');
     if (!token) {
-      navigate('/login');
+      navigate('/home');
     }
   }, []);
 
