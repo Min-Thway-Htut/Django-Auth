@@ -14,8 +14,9 @@ Users can submit account registration requests by providing their usernames, ema
 In case you would like to test the authentication backend locally, please follow these steps.
 
 - create a virtual environment under /user-authentication directory
+```bash
 source venv/bin/activate
-
+```
 - install requirements.txt file
 ```bash
 pip install -r requirements.txt
