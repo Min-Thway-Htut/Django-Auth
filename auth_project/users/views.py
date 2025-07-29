@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from .utils import notify_user
 
 User = get_user_model()
 
@@ -45,7 +46,7 @@ class LoginView(APIView):
                 return Response({'error': 'Account not approved yet.'}, status=403)
             token, _ = Token.objects.get_or_create(user=user)
             return Response({'token': token.key})
-        return Response({'error': 'Invalid credentials'}, status=400)
+        return Response({'error': 'You have either not been accepted by the admin or entered invalid credentials.'}, status=400)
            
 User = get_user_model()
 
@@ -54,7 +55,10 @@ class ApproveUserView(APIView):
         try:
             user = User.objects.get(approval_token=token)
             user.is_approved = True
+            user.approval_token = None
             user.save()
+
+            notify_user(user, approved=True)
             return Response({"message": "User approved successfully."})
         except User.DoesNotExist:
             return Response({"error": "Invalid approval token."}, status=status.HTTP_404_NOT_FOUND)
@@ -64,6 +68,7 @@ class RejectUserView(APIView):
     def get(self, request, token):
         try:
             user = User.objects.get(approval_token=token)
+            notify_user(user, approved=False)
             user.delete()
             return Response({"message": "User rejected and deleted."})
         except User.DoesNotExist:
