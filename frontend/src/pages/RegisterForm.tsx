@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { specialChars } from '@testing-library/user-event';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 interface RegisterData {
   username: string,
@@ -14,15 +14,14 @@ const RegisterForm: React.FC = () => {
     email: '',
     password: '',
   });
-
   const [message, setMessage] = useState<string>('');
   const [showRules, setShowRules] = useState<boolean>(false);
-
   const [validations, setValidations] = useState({
     length: false,
     uppercase: false,
     specialChar: false,
-  })
+  });
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = e.target;
@@ -53,6 +52,10 @@ const RegisterForm: React.FC = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  }
+
   return (
     <div>
        <h2>Register</h2>
@@ -71,15 +74,31 @@ const RegisterForm: React.FC = () => {
         value={formData.email} 
         onChange={handleChange} 
         required />
-        <input 
+        <div style={{position: 'relative'}}>
+           <input 
         name="password" 
-        type="password" 
+        type={showPassword ? 'text': 'password'}
         placeholder="Password" 
         value={formData.password} 
         onChange={handleChange} 
         onFocus={() => setShowRules(true)}
         onBlur={() => setShowRules(false)}
-        required />
+        required
+        style={{paddingRight: '2.5rem'}} 
+        />
+        <span
+        onClick={togglePasswordVisibility}
+          style={{
+              position: 'absolute',
+              right: '10px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              cursor: 'pointer',
+            }}
+        >
+           {showPassword ? FaEyeSlash({})  : FaEye({})}
+        </span>
+        </div>
 
         {showRules && (
           <div style={{ marginTop: '10px', fontSize: '0.9em' }}>
