@@ -9,6 +9,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['username', 'email', 'password']
 
+    def validate_email(self, value):
+        if CustomUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value
+
     def validate_password(self, value):
         validate_password(value)
         return value
