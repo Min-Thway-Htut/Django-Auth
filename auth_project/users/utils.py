@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 def notify_user(user, approved: bool):
     subject = 'Account Approval Status'
@@ -14,3 +15,6 @@ def notify_user(user, approved: bool):
         [user.email],
         fail_silently=False
     )
+
+
+password_reset_token = PasswordResetTokenGenerator()

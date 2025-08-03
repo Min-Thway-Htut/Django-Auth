@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {FaEye, FaEyeSlash} from 'react-icons/fa';
+import { Link } from "react-router-dom";
 
 interface LoginData {
   username: string;
@@ -73,6 +74,7 @@ const LoginForm: React.FC = () => {
         <button type="submit">Login</button>
         </div>
       </form>
+      <Link to="/forgot-password">Forgot Password</Link>
     </div>
   );
 };
